@@ -1,99 +1,40 @@
 # CI/CD Blueprint: RAG Eval + Guardrail Stack
 
-**Sinh viên:** [Họ Tên]  
-**Ngày:** [Ngày làm lab]
+**Student:** Ngo Thanh Dat — 2A202601323  
+**Project:** Day24-Track3-2A202601323-NgoThanhDat
 
----
+> This file is generated from this repository's own Phase A/B/C reports. Sample metrics from other repositories are not used.
 
-## Guard Stack Architecture
+## 1. Guard Stack Pipeline
 
-```
-User Input
-    │
-    ▼ (~?ms P95)
-[Presidio PII Scan]
-    │ block if: VN_CCCD / VN_PHONE / EMAIL detected
-    │ action:   return 400 + "PII detected in query"
-    ▼ (~?ms P95)
-[NeMo Input Rail]
-    │ block if: off-topic / jailbreak / prompt injection
-    │ action:   return 503 + refuse message
-    ▼
-[RAG Pipeline (Day 18)]
-    │ M1 Chunk → M2 Search → M3 Rerank → GPT-4o-mini
-    ▼
-[NeMo Output Rail]
-    │ flag if:  PII in response / sensitive content
-    │ action:   replace with safe response
-    ▼
-User Response
-```
+| Layer | Tool | Target P95 | Failure Action |
+|---|---|---:|---|
+| PII Detection | Presidio + VN recognizers | < 10 ms | Reject + anonymize + log |
+| Topic/Jailbreak | NeMo Input Rail | < 300 ms | Block + reason |
+| RAG Pipeline | Day 18 Production RAG | < 2000 ms | Grounded fallback / error log |
+| Output Check | NeMo Output Rail + PII scan | < 300 ms | Redact/block + log |
 
----
+## 2. CI Gates
 
-## Latency Budget
+- [x] RAGAS faithfulness >= 0.75 on 50q using the real RAGAS backend
+- [x] Adversarial pass rate >= 90% (18/20 target)
+- [ ] P95 total guard latency < 500 ms
+- [ ] `pytest tests/ -v` passes (verify in CI/local terminal)
+- [ ] `python check_lab.py` passes (verify after all artifacts are generated)
 
-*(Điền từ kết quả Task 12 — measure_p95_latency())*
+## 3. Monitoring
 
-| Layer | P50 (ms) | P95 (ms) | P99 (ms) | Budget |
-|---|---|---|---|---|
-| Presidio PII | ? | ? | ? | <10ms |
-| NeMo Input Rail | ? | ? | ? | <300ms |
-| RAG Pipeline | ? | ? | ? | <2000ms |
-| NeMo Output Rail | ? | ? | ? | <300ms |
-| **Total Guard** | ? | **?** | ? | **<500ms** |
+- P95 guard latency: **805.653 ms**
+- Adversarial pass rate: **100.0%**
+- Worst RAGAS metric: **answer_relevancy**
+- Dominant failure distribution: **factual**
+- RAGAS backend: **ragas**
+- Judge backend/model: **openai_llm_judge / gpt-4o-mini**
 
-**Budget OK?** [ ] Yes / [ ] No  
-**Comment:** [Nếu vượt budget, layer nào là bottleneck và cách tối ưu?]
+## 4. Production Actions
 
----
-
-## CI/CD Gates (phải pass trước khi merge to main)
-
-```yaml
-# .github/workflows/rag_eval.yml
-- name: RAGAS Quality Gate
-  run: python src/phase_a_ragas.py
-  env:
-    MIN_FAITHFULNESS: 0.75
-    MIN_AVG_SCORE: 0.65
-
-- name: Guardrail Gate
-  run: pytest tests/test_phase_c.py -k "test_adversarial_suite_pass_rate"
-  # phải ≥ 15/20 (75%)
-
-- name: Latency Gate
-  run: python -c "from src.phase_c_guard import measure_p95_latency; ..."
-  # P95 total < 500ms
-```
-
----
-
-## Monitoring Dashboard (production)
-
-| Metric | Alert Threshold | Action |
-|---|---|---|
-| RAGAS faithfulness (daily sample) | < 0.70 | Page on-call |
-| Adversarial block rate | < 80% | Review new attack patterns |
-| Guard P95 latency | > 600ms | Scale NeMo model |
-| PII detected count | spike >10/hour | Security alert |
-
----
-
-## Kết quả thực tế từ Lab
-
-| | Kết quả |
-|---|---|
-| RAGAS avg_score (50q) | ? |
-| Worst metric | ? |
-| Dominant failure distribution | ? |
-| Cohen's κ | ? |
-| Adversarial pass rate | ? / 20 |
-| Guard P95 latency | ? ms |
-
----
-
-## Nhận xét & Cải tiến
-
-> [Viết 3-5 câu về: điều gì hoạt động tốt, điều gì cần cải thiện,
->  nếu deploy production thực sự bạn sẽ thay đổi gì trong stack này?]
+1. Run the 50-question RAGAS suite on every retrieval/generation change and block material regressions.
+2. Keep swap-and-average for release evaluation to detect position bias.
+3. Run the 20-case adversarial suite on every guardrail/configuration change.
+4. Persist per-layer latency, guardrail block reasons, RAGAS distribution metrics, and judge agreement for trend monitoring.
+5. Treat `offline_proxy`, `offline_reference_proxy`, and deterministic fallbacks as development smoke tests, never as production evidence.

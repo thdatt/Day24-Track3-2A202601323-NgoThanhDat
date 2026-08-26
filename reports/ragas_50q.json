@@ -1,0 +1,160 @@
+{
+  "backend": "ragas",
+  "backend_error": null,
+  "total_questions": 50,
+  "per_distribution": {
+    "factual": {
+      "count": 20,
+      "faithfulness": 0.975,
+      "answer_relevancy": 0.840582,
+      "context_precision": 0.966667,
+      "context_recall": 1.0,
+      "avg_score": 0.945562
+    },
+    "multi_hop": {
+      "count": 20,
+      "faithfulness": 0.695357,
+      "answer_relevancy": 0.751273,
+      "context_precision": 0.983333,
+      "context_recall": 0.879167,
+      "avg_score": 0.827282
+    },
+    "adversarial": {
+      "count": 10,
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.855554,
+      "context_precision": 1.0,
+      "context_recall": 0.716667,
+      "avg_score": 0.893055
+    }
+  },
+  "failure_clusters": {
+    "matrix": {
+      "faithfulness": {
+        "factual": 1,
+        "multi_hop": 8,
+        "adversarial": 0
+      },
+      "answer_relevancy": {
+        "factual": 17,
+        "multi_hop": 8,
+        "adversarial": 2
+      },
+      "context_precision": {
+        "factual": 2,
+        "multi_hop": 0,
+        "adversarial": 0
+      },
+      "context_recall": {
+        "factual": 0,
+        "multi_hop": 4,
+        "adversarial": 8
+      }
+    },
+    "dominant_failure_distribution": "factual",
+    "dominant_failure_metric": "answer_relevancy",
+    "insight": "'factual' contains the largest failure cluster and 'answer_relevancy' is the most frequent weakest metric. Recommended next action: Preserve intent/entities/units and make the generation prompt more direct."
+  },
+  "bottom_10": [
+    {
+      "rank": 1,
+      "question_id": 33,
+      "distribution": "multi_hop",
+      "question": "Nhân viên Manager có thâm niên 12 năm: tổng phụ cấp hàng tháng và số ngày phép năm theo v2024 là bao nhiêu?",
+      "avg_score": 0.5,
+      "worst_metric": "answer_relevancy",
+      "diagnosis": "The answer does not directly satisfy the question.",
+      "suggested_fix": "Preserve intent/entities/units and make the generation prompt more direct."
+    },
+    {
+      "rank": 2,
+      "question_id": 24,
+      "distribution": "multi_hop",
+      "question": "Nhân viên tạm ứng 15 triệu, sau 20 ngày mới thanh toán. Bị phạt bao nhiêu?",
+      "avg_score": 0.6247,
+      "worst_metric": "faithfulness",
+      "diagnosis": "The generated answer is not sufficiently grounded in retrieved evidence.",
+      "suggested_fix": "Use stricter context-only generation, remove noisy chunks, and keep temperature low."
+    },
+    {
+      "rank": 3,
+      "question_id": 38,
+      "distribution": "multi_hop",
+      "question": "Nhân viên đi công tác nước ngoài 4 ngày tại thành phố lớn, ở khách sạn 200 USD/đêm (3 đêm). Công ty thanh toán bao nhiêu tiền khách sạn?",
+      "avg_score": 0.7043,
+      "worst_metric": "faithfulness",
+      "diagnosis": "The generated answer is not sufficiently grounded in retrieved evidence.",
+      "suggested_fix": "Use stricter context-only generation, remove noisy chunks, and keep temperature low."
+    },
+    {
+      "rank": 4,
+      "question_id": 23,
+      "distribution": "multi_hop",
+      "question": "Nhân viên được tài trợ khóa học 25 triệu, nghỉ việc sau 8 tháng hoàn thành khóa học. Phải hoàn trả bao nhiêu?",
+      "avg_score": 0.7291,
+      "worst_metric": "faithfulness",
+      "diagnosis": "The generated answer is not sufficiently grounded in retrieved evidence.",
+      "suggested_fix": "Use stricter context-only generation, remove noisy chunks, and keep temperature low."
+    },
+    {
+      "rank": 5,
+      "question_id": 29,
+      "distribution": "multi_hop",
+      "question": "Nhân viên tạm ứng 8 triệu, chưa thanh toán sau 30 ngày (quá hạn 15 ngày). Ai phê duyệt khoản này và phí phạt là bao nhiêu?",
+      "avg_score": 0.7439,
+      "worst_metric": "faithfulness",
+      "diagnosis": "The generated answer is not sufficiently grounded in retrieved evidence.",
+      "suggested_fix": "Use stricter context-only generation, remove noisy chunks, and keep temperature low."
+    },
+    {
+      "rank": 6,
+      "question_id": 25,
+      "distribution": "multi_hop",
+      "question": "Lương thử việc của nhân viên Junior mức cao nhất là bao nhiêu?",
+      "avg_score": 0.7854,
+      "worst_metric": "faithfulness",
+      "diagnosis": "The generated answer is not sufficiently grounded in retrieved evidence.",
+      "suggested_fix": "Use stricter context-only generation, remove noisy chunks, and keep temperature low."
+    },
+    {
+      "rank": 7,
+      "question_id": 7,
+      "distribution": "factual",
+      "question": "Nghỉ phép không lương 20 ngày cần ai phê duyệt?",
+      "avg_score": 0.7973,
+      "worst_metric": "faithfulness",
+      "diagnosis": "The generated answer is not sufficiently grounded in retrieved evidence.",
+      "suggested_fix": "Use stricter context-only generation, remove noisy chunks, and keep temperature low."
+    },
+    {
+      "rank": 8,
+      "question_id": 27,
+      "distribution": "multi_hop",
+      "question": "Nhân viên có thâm niên 7 năm theo v2024 được nghỉ bao nhiêu ngày phép? Nếu bị trừ thêm 4 ngày ốm không có giấy y tế thì còn lại bao nhiêu?",
+      "avg_score": 0.8028,
+      "worst_metric": "faithfulness",
+      "diagnosis": "The generated answer is not sufficiently grounded in retrieved evidence.",
+      "suggested_fix": "Use stricter context-only generation, remove noisy chunks, and keep temperature low."
+    },
+    {
+      "rank": 9,
+      "question_id": 45,
+      "distribution": "adversarial",
+      "question": "Có cần kích hoạt xác thực đa yếu tố (MFA) không?",
+      "avg_score": 0.831,
+      "worst_metric": "context_recall",
+      "diagnosis": "The retrieved context is missing required evidence.",
+      "suggested_fix": "Improve chunking, hybrid recall, query decomposition, or parent retrieval."
+    },
+    {
+      "rank": 10,
+      "question_id": 26,
+      "distribution": "multi_hop",
+      "question": "Nhân viên vừa kết hôn và cùng tuần đó có con kết hôn. Tổng số ngày nghỉ đặc biệt có lương là bao nhiêu?",
+      "avg_score": 0.8319,
+      "worst_metric": "faithfulness",
+      "diagnosis": "The generated answer is not sufficiently grounded in retrieved evidence.",
+      "suggested_fix": "Use stricter context-only generation, remove noisy chunks, and keep temperature low."
+    }
+  ]
+}

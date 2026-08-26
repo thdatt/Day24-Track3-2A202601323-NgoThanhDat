@@ -1,70 +1,34 @@
 # Failure Cluster Analysis — Phase A
 
-**Sinh viên:** [Họ Tên]  
-**Ngày:** [Ngày làm lab]
+**Evaluation backend:** `ragas`
+**Questions evaluated:** 50
 
----
+## Worst-metric × distribution matrix
 
-## 1. Aggregate RAGAS Scores theo Distribution
+| Metric | factual | multi_hop | adversarial | total |
+|---|---:|---:|---:|---:|
+| faithfulness | 1 | 8 | 0 | 9 |
+| answer_relevancy | 17 | 8 | 2 | 27 |
+| context_precision | 2 | 0 | 0 | 2 |
+| context_recall | 0 | 4 | 8 | 12 |
 
-| Metric | factual | multi_hop | adversarial |
-|---|---|---|---|
-| faithfulness | ? | ? | ? |
-| answer_relevancy | ? | ? | ? |
-| context_precision | ? | ? | ? |
-| context_recall | ? | ? | ? |
-| **avg_score** | ? | ? | ? |
+## Dominant failure
 
----
+- Distribution: **factual**
+- Metric: **answer_relevancy**
+- Insight: 'factual' contains the largest failure cluster and 'answer_relevancy' is the most frequent weakest metric. Recommended next action: Preserve intent/entities/units and make the generation prompt more direct.
 
-## 2. Bottom 10 Questions
+## Bottom 10
 
-| Rank | Distribution | Question | avg_score | worst_metric |
-|---|---|---|---|---|
-| 1 | | | | |
-| 2 | | | | |
-| ... | | | | |
-
----
-
-## 3. Failure Cluster Matrix
-
-*(Mỗi ô = số câu có worst_metric = row, thuộc distribution = col)*
-
-| worst_metric | factual | multi_hop | adversarial | Total |
-|---|---|---|---|---|
-| faithfulness | | | | |
-| answer_relevancy | | | | |
-| context_precision | | | | |
-| context_recall | | | | |
-
----
-
-## 4. Dominant Failure Analysis
-
-**Dominant distribution:** [factual / multi_hop / adversarial]  
-**Dominant metric:** [faithfulness / answer_relevancy / context_precision / context_recall]
-
-**Lý do phân tích:**
-
-> [Viết 3-5 câu giải thích tại sao distribution này hay bị failure, 
->  tại sao metric này thấp nhất trong corpus HR policy tiếng Việt]
-
----
-
-## 5. Suggested Fixes
-
-| Metric yếu | Root cause | Suggested fix |
-|---|---|---|
-| faithfulness | LLM hallucinating | |
-| context_recall | Missing relevant chunks | |
-| context_precision | Too many irrelevant chunks | |
-| answer_relevancy | Answer doesn't match question | |
-
----
-
-## 6. Nhận xét về Adversarial Distribution
-
-> [So sánh avg_score của adversarial vs factual vs multi_hop.
->  Pipeline có bị "nhầm" bởi version conflicts (v2023 vs v2024) không?
->  Câu nào trong bottom 10 rơi vào adversarial? Tại sao?]
+| Rank | QID | Distribution | Avg score | Worst metric | Diagnosis | Suggested fix |
+|---:|---:|---|---:|---|---|---|
+| 1 | 33 | multi_hop | 0.500 | answer_relevancy | The answer does not directly satisfy the question. | Preserve intent/entities/units and make the generation prompt more direct. |
+| 2 | 24 | multi_hop | 0.625 | faithfulness | The generated answer is not sufficiently grounded in retrieved evidence. | Use stricter context-only generation, remove noisy chunks, and keep temperature low. |
+| 3 | 38 | multi_hop | 0.704 | faithfulness | The generated answer is not sufficiently grounded in retrieved evidence. | Use stricter context-only generation, remove noisy chunks, and keep temperature low. |
+| 4 | 23 | multi_hop | 0.729 | faithfulness | The generated answer is not sufficiently grounded in retrieved evidence. | Use stricter context-only generation, remove noisy chunks, and keep temperature low. |
+| 5 | 29 | multi_hop | 0.744 | faithfulness | The generated answer is not sufficiently grounded in retrieved evidence. | Use stricter context-only generation, remove noisy chunks, and keep temperature low. |
+| 6 | 25 | multi_hop | 0.785 | faithfulness | The generated answer is not sufficiently grounded in retrieved evidence. | Use stricter context-only generation, remove noisy chunks, and keep temperature low. |
+| 7 | 7 | factual | 0.797 | faithfulness | The generated answer is not sufficiently grounded in retrieved evidence. | Use stricter context-only generation, remove noisy chunks, and keep temperature low. |
+| 8 | 27 | multi_hop | 0.803 | faithfulness | The generated answer is not sufficiently grounded in retrieved evidence. | Use stricter context-only generation, remove noisy chunks, and keep temperature low. |
+| 9 | 45 | adversarial | 0.831 | context_recall | The retrieved context is missing required evidence. | Improve chunking, hybrid recall, query decomposition, or parent retrieval. |
+| 10 | 26 | multi_hop | 0.832 | faithfulness | The generated answer is not sufficiently grounded in retrieved evidence. | Use stricter context-only generation, remove noisy chunks, and keep temperature low. |
